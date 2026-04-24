@@ -1,0 +1,24 @@
+# Go
+bin/
+tmp/
+
+# Air (hot reload)
+tmp/
+.air.toml.local
+
+# Env files
+.env
+.env.*
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+
+# Docker
+docker-compose.override.yml
+
+# Build artifacts
+dist/
+build/
