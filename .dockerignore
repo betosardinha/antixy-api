@@ -1,0 +1,26 @@
+# Git
+.git
+.gitignore
+
+# Env files
+.env
+.env.*
+*.env
+
+# Logs
+*.log
+logs/
+*.out
+
+# Build artifacts
+dist/
+build/
+
+# Air (hot reload)
+tmp
+
+# Go
+vendor
+
+# Coverage
+coverage/

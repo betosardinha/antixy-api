@@ -1,16 +1,27 @@
-FROM golang:1.26.2-alpine
+# syntax=docker/dockerfile:1.6
 
-RUN apk add --no-cache git
+FROM golang:1.26.2-alpine as base
+
+ARG TARGETARCH
 
 WORKDIR /app
+RUN apk add --no-cache git
+
+ENV PATH="/go/bin:${PATH}"
+ENV GOPROXY=https://proxy.golang.org,direct
 
 COPY go.mod go.sum ./
-RUN go mod download
 
-RUN go install github.com/air-verse/air@$(go list -m -f '{{.Version}}' github.com/air-verse/air)
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    go mod download
 
-COPY . .
+RUN wget -O /usr/local/bin/goose https://github.com/pressly/goose/releases/download/v3.27.1/goose_linux_${TARGETARCH} \
+ && chmod +x /usr/local/bin/goose
+
+RUN wget -O /usr/local/bin/air https://github.com/air-verse/air/releases/download/v1.65.1/air_1.65.1_linux_${TARGETARCH} \
+ && chmod +x /usr/local/bin/air
 
 EXPOSE 8080
 
-CMD ["air"]
+CMD ["sh", "/app/scripts/start.sh"]

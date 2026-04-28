@@ -25,6 +25,7 @@ services:
       - "6379:6379"
 
   api:
+    image: antixy-api
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -38,6 +39,8 @@ services:
       - "8080:8080"
     volumes:
       - .:/app
+      - go-mod-cache:/go/pkg/mod
+      - go-build-cache:/root/.cache/go-build
     environment:
       DATABASE_URL: postgres://postgres:postgres@db:5432/antixy-dev?sslmode=disable
 
@@ -60,3 +63,5 @@ services:
 volumes:
   db_data:
   pgadmin_data:
+  go-mod-cache:
+  go-build-cache:
