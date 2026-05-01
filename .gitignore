@@ -8,7 +8,6 @@ tmp/
 
 # Env files
 .env
-.env.*
 
 # Logs
 *.log

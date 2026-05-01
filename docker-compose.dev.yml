@@ -1,4 +1,15 @@
-version: "3.9"
+x-app-base: &app-base
+  image: antixy-api
+  build:
+    context: .
+    dockerfile: Dockerfile.dev
+  volumes:
+    - .:/app
+    - go-mod-cache:/go/pkg/mod
+    - go-build-cache:/root/.cache/go-build
+  working_dir: /app
+  env_file:
+    - .env.dev
 
 services:
   db:
@@ -25,10 +36,7 @@ services:
       - "6379:6379"
 
   api:
-    image: antixy-api
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
+    <<: *app-base
     container_name: antixy-api
     depends_on:
       db:
@@ -37,12 +45,14 @@ services:
         condition: service_started
     ports:
       - "8080:8080"
-    volumes:
-      - .:/app
-      - go-mod-cache:/go/pkg/mod
-      - go-build-cache:/root/.cache/go-build
-    environment:
-      DATABASE_URL: postgres://postgres:postgres@db:5432/antixy-dev?sslmode=disable
+
+  migrate:
+    <<: *app-base
+    container_name: antixy-migrate
+    depends_on:
+      db:
+        condition: service_healthy
+    entrypoint: ["sh", "-c"]
 
   pgadmin:
     image: elestio/pgadmin:REL-9_14
