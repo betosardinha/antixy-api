@@ -1,4 +1,4 @@
-package db
+package database
 
 import (
 	"fmt"
@@ -15,12 +15,12 @@ func Connect() (*gorm.DB, error) {
 		return nil, fmt.Errorf("DATABASE_URL not set")
 	}
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	connection, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
 
-	sqlDB, err := db.DB()
+	sqlDB, err := connection.DB()
 	if err != nil {
 		return nil, err
 	}
@@ -29,5 +29,5 @@ func Connect() (*gorm.DB, error) {
 	sqlDB.SetMaxIdleConns(5)
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
-	return db, nil
+	return connection, nil
 }

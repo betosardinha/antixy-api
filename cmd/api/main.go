@@ -6,7 +6,7 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/betosardinha/antixy-api/internal/adapters/db"
+	"github.com/betosardinha/antixy-api/internal/adapters/database"
 	"github.com/betosardinha/antixy-api/internal/app"
 )
 
@@ -24,14 +24,14 @@ func main() {
 }
 
 func initDatabase() (*gorm.DB, error) {
-	database, err := db.Connect()
+	connection, err := database.Connect()
 	if err != nil {
 		return nil, fmt.Errorf("connect database: %w", err)
 	}
 
 	log.Println("Database connected")
 
-	return database, nil
+	return connection, nil
 }
 
 func runServer(application *app.App) error {
