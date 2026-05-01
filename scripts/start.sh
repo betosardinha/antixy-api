@@ -1,16 +1,11 @@
 #!/bin/sh
 
-set -e
+set -euo pipefail
 
-echo "Checking migrations..."
+echo "Running migrations (if any)"
 
-if goose -dir /app/internal/database/migrations postgres "$DATABASE_URL" status | grep -q "Pending"; then
-  echo "Running migrations..."
-  goose -dir /app/internal/database/migrations postgres "$DATABASE_URL" up
-else
-  echo "No migrations needed"
-fi
+goose up || true
 
-echo "Starting API..."
+echo "Starting API"
 
-air
+exec air
