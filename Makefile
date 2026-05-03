@@ -1,28 +1,39 @@
-compose=docker compose -f docker-compose.dev.yml
+COMPOSE=docker compose -f docker-compose.dev.yml
 
 lint:
-	$(compose) run --rm lint
+	$(COMPOSE) run --rm lint
 
 migrate-up:
-	$(compose) run --rm migrate goose up
+	$(COMPOSE) run --rm migrate goose up
 
 migrate-down:
-	$(compose) run --rm migrate goose down
+	$(COMPOSE) run --rm migrate goose down
 
 migrate-status:
-	$(compose) run --rm migrate goose status
+	$(COMPOSE) run --rm migrate goose status
 
 up:
-	$(compose) up -d --build db redis api
+	$(COMPOSE) up -d --build db redis api
 
 down:
-	$(compose) down
+	$(COMPOSE) down
 
 logs:
-	$(compose) logs -f
+	$(COMPOSE) logs -f
 
-logs-api:
-	$(compose) logs -f api
+logs-%:
+	$(COMPOSE) logs -f $*
 
 tools:
-	$(compose) up -d pgadmin
+	$(COMPOSE) up -d pgadmin
+
+test:
+	rm -f coverage.out
+	$(COMPOSE) run --rm test
+
+coverage:
+	$(COMPOSE) run --rm test go tool cover -func=coverage.out
+
+coverage-html:
+	$(COMPOSE) run --rm test go tool cover -html=coverage.out -o coverage.html
+	open coverage.html

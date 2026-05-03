@@ -55,6 +55,7 @@ services:
 
   lint:
     image: golangci/golangci-lint:v2.12.1-alpine
+    container_name: antixy-lint
     volumes:
       - .:/app
       - go-mod-cache:/go/pkg/mod
@@ -62,6 +63,11 @@ services:
       - golangci-cache:/root/.cache/golangci-lint
     working_dir: /app
     command: golangci-lint run ./... --timeout=3m
+
+  test:
+    <<: *app-base
+    container_name: antixy-test
+    command: go test ./... -covermode=set -coverprofile=coverage.out
 
   pgadmin:
     image: elestio/pgadmin:REL-9_14

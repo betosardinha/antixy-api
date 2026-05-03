@@ -21,3 +21,7 @@ docker-compose.override.yml
 # Build artifacts
 dist/
 build/
+
+# Tests
+coverage.out
+coverage.html
