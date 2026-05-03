@@ -53,6 +53,16 @@ services:
       db:
         condition: service_healthy
 
+  lint:
+    image: golangci/golangci-lint:v2.12.1-alpine
+    volumes:
+      - .:/app
+      - go-mod-cache:/go/pkg/mod
+      - go-build-cache:/root/.cache/go-build
+      - golangci-cache:/root/.cache/golangci-lint
+    working_dir: /app
+    command: golangci-lint run ./... --timeout=3m
+
   pgadmin:
     image: elestio/pgadmin:REL-9_14
     container_name: antixy-pgadmin
@@ -74,3 +84,4 @@ volumes:
   pgadmin_data:
   go-mod-cache:
   go-build-cache:
+  golangci-cache:
