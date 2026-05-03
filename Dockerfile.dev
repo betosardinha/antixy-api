@@ -24,4 +24,4 @@ RUN wget -O /usr/local/bin/air https://github.com/air-verse/air/releases/downloa
 
 EXPOSE 8080
 
-CMD ["sh", "/app/scripts/start.sh"]
+CMD ["air"]
