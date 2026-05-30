@@ -67,7 +67,7 @@ services:
   test:
     <<: *app-base
     container_name: antixy-test
-    command: go test ./... -covermode=set -coverprofile=coverage.out
+    command: go test ./...
 
   pgadmin:
     image: elestio/pgadmin:REL-9_14
