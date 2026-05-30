@@ -1,14 +1,14 @@
 # syntax=docker/dockerfile:1.6
 
-FROM golang:1.26.2-alpine as base
+FROM golang:1.26.3-alpine as base
 
 ARG TARGETARCH
 
 WORKDIR /app
 RUN apk add --no-cache git
 
-ENV PATH="/go/bin:${PATH}"
 ENV GOPROXY=https://proxy.golang.org,direct
+ENV GOFLAGS="-buildvcs=false"
 
 COPY go.mod go.sum ./
 
@@ -16,11 +16,22 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
     go mod download
 
-RUN wget -O /usr/local/bin/goose https://github.com/pressly/goose/releases/download/v3.27.1/goose_linux_${TARGETARCH} \
- && chmod +x /usr/local/bin/goose
+RUN set -eux; \
+  case "${TARGETARCH}" in \
+    amd64) GOOSE_ARCH="x86_64"; AIR_ARCH="amd64" ;; \
+    arm64) GOOSE_ARCH="arm64"; AIR_ARCH="arm64" ;; \
+    *) echo "unsupported arch: ${TARGETARCH}"; exit 1 ;; \
+  esac; \
+  \
+  wget -O /usr/local/bin/goose \
+    https://github.com/pressly/goose/releases/download/v3.27.1/goose_linux_${GOOSE_ARCH}; \
+  chmod +x /usr/local/bin/goose; \
+  \
+  wget -O /usr/local/bin/air \
+    https://github.com/air-verse/air/releases/download/v1.65.1/air_1.65.1_linux_${AIR_ARCH}; \
+  chmod +x /usr/local/bin/air
 
-RUN wget -O /usr/local/bin/air https://github.com/air-verse/air/releases/download/v1.65.1/air_1.65.1_linux_${TARGETARCH} \
- && chmod +x /usr/local/bin/air
+COPY . .
 
 EXPOSE 8080
 
